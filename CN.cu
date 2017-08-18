@@ -55,7 +55,7 @@ main(int argc, char** argv)
     //CUT_EXIT(argc, argv);
 }
 
-void InitHostMem(double *Layer1_Weights_CPU, double *Layer2_Weights_CPU)
+void InitHostMem(double *Layer1_Weights_CPU, double *Layer2_Weights_CPU, double *Layer3_Weights_CPU, double *Layer4_Weights_CPU, double *Layer5_Weights_CPU)
 {
 	// initial layer 1 weight
 	FILE * pFile1 = fopen ("data/conv1.txt","rb");
@@ -128,6 +128,117 @@ void InitHostMem(double *Layer1_Weights_CPU, double *Layer2_Weights_CPU)
 		printf("FAIL! INPUT WEIGHTS NOT FOUND!\n");
 		exit(1);
 	}
+	//Layer 3 Weights
+	FILE * pFile3 = fopen ("data/conv3.txt","rb");
+	if (pFile3 != NULL)
+	{
+		printf("File 3 Opened\n");
+		char s[6000000] = "";
+		fread(s,sizeof(s),1,pFile2);
+		//printf("%s\n",s);
+		printf("Done\n");
+		long int index = 0, i = 0;
+		char delim[2];
+		delim[0] = '\n';
+    		delim[1] = 0;
+		char* temp_string = strtok(s, delim);
+		while(temp_string != NULL)
+		{ 	
+			double temp_num = atof(temp_string);
+			//printf("%.8f %d\n",temp_num,i);
+			Layer3_Weights_CPU[i] = temp_num;
+			i++;
+			index++;
+			if(i==51200)
+			{
+				printf("Breaking\n");
+				break;
+			}
+			temp_string = strtok(NULL, delim);
+		}
+		//printf("Last Value: %.8f\n",Layer3_Weights_CPU[51100]);
+		fclose (pFile3);
+	}	
+	
+	if (!pFile3)
+	{
+		printf("FAIL! INPUT WEIGHTS NOT FOUND!\n");
+		exit(1);
+	}
+	//Layer 4 Weights
+	FILE * pFile4 = fopen ("data/ip1.txt","rb");
+	if (pFile4 != NULL)
+	{
+		printf("File 4 Opened\n");
+		char s[8000000] = "";
+		fread(s,sizeof(s),1,pFile2);
+		//printf("%s\n",s);
+		printf("Done\n");
+		long int index = 0, i = 0;
+		char delim[2];
+		delim[0] = '\n';
+    		delim[1] = 0;
+		char* temp_string = strtok(s, delim);
+		while(temp_string != NULL)
+		{ 	
+			double temp_num = atof(temp_string);
+			//printf("%.8f %d\n",temp_num,i);
+			Layer4_Weights_CPU[i] = temp_num;
+			i++;
+			index++;
+			if(i==65536)
+			{
+				printf("Breaking\n");
+				break;
+			}
+			temp_string = strtok(NULL, delim);
+		}
+		//printf("First Value: %.8f\n",Layer4_Weights_CPU[0]);
+		fclose (pFile4);
+	}	
+	
+	if (!pFile4)
+	{
+		printf("FAIL! INPUT WEIGHTS NOT FOUND!\n");
+		exit(1);
+	}
+	//Layer 5 Weights
+	FILE * pFile5 = fopen ("data/ip2.txt","rb");
+	if (pFile5 != NULL)
+	{
+		printf("File 5 Opened\n");
+		char s[80000] = "";
+		fread(s,sizeof(s),1,pFile2);
+		//printf("%s\n",s);
+		printf("Done\n");
+		long int index = 0, i = 0;
+		char delim[2];
+		delim[0] = '\n';
+    		delim[1] = 0;
+		char* temp_string = strtok(s, delim);
+		while(temp_string != NULL)
+		{ 	
+			double temp_num = atof(temp_string);
+			//printf("%.8f %d\n",temp_num,i);
+			Layer5_Weights_CPU[i] = temp_num;
+			i++;
+			index++;
+			if(i==576)
+			{
+				printf("Breaking\n");
+				break;
+			}
+			temp_string = strtok(NULL, delim);
+		}
+		//printf("Last Value: %.8f\n",Layer5_Weights_CPU[575]);
+		fclose (pFile5);
+	}	
+	
+	if (!pFile5)
+	{
+		printf("FAIL! INPUT WEIGHTS NOT FOUND!\n");
+		exit(1);
+	}
 }
 
 void LoadInput(int *Data_Layer_CPU)
@@ -183,6 +294,7 @@ void ConvertInput(int *Data_Layer_CPU_R, int *Data_Layer_CPU_G, int *Data_Layer_
 }
 void ExecuteFirstLayer(double *Layer1_Weights_CPU, int *Data_Layer_CPU_R, int *Data_Layer_CPU_G, int *Data_Layer_CPU_B, double ***Layer1_Features)
 {
+	printf("First Layer Execution\n");
 	for(int f=0; f<32; f++)
 	{
 		double maskR[25], maskG[25], maskB[25];
@@ -233,7 +345,7 @@ void ExecuteFirstLayer(double *Layer1_Weights_CPU, int *Data_Layer_CPU_R, int *D
 			}
 		}
 	}
-	printf("\n");
+	//printf("\n");
 	for(int x=0; x<32; x++)
 	{
 		for(int y=0; y<32; y++)
@@ -246,7 +358,7 @@ void ExecuteFirstLayer(double *Layer1_Weights_CPU, int *Data_Layer_CPU_R, int *D
 
 void ExecuteSecondLayer(double *Layer2_Weights_CPU, double ***Layer2_Features, double ***Layer2_pool_GPU)
 {
-	printf("Second Layer Executions:\n");
+	printf("Second Layer Execution\n");
 	for(int f=0; f<32; f++)
 	{
 		double mask[32][25];
@@ -325,6 +437,127 @@ void ExecuteSecondLayer(double *Layer2_Weights_CPU, double ***Layer2_Features, d
 	//printf("First Value: %.8f\n",Layer2_Features[31][15][11]);
 }
 
+void ExecuteThirdLayer(double *Layer3_Weights_CPU, double ***Layer3_Features, double ***Layer3_pool_GPU)
+{
+	printf("Third Layer Execution\n");
+	for(int f=0; f<64; f++)
+	{
+		double mask[32][25];
+		double input[32][25];
+		double Features[64][8][8];
+		for(int n=0; n<32; n++)
+		{
+			for(int i=0; i<25; i++)
+			{
+				mask[n][i] = Layer3_Weights_CPU[i+f*25*32+n*25];
+				//printf("%.8f ", mask[n][i]);
+			}
+			//printf("\n");
+		}
+		//printf("Weights Load Complete\n");
+		for(int n=0; n<32; n++)
+		{
+			for(int x=0; x<8; x++)
+			{
+				for(int y=0; y<8; y++)
+				{
+					for(int i = x-2; i<=x+2; i++)
+					{
+    						for(int j=y-2; j<=y+2; j++)
+    						{
+							int x_index = i-x+2;
+							int y_index = j-y+2;
+         						if(i<0 || j<0)
+							{
+             					 		input[n][(y_index)+(x_index)*5] = 0;
+							}
+         						else if(j>7 || i>7)
+							{
+              							input[n][(y_index)+(x_index)*5] = 0;
+							}
+         						else
+							{
+               							input[n][(y_index)+(x_index)*5] = Layer3_pool_GPU[n][x_index+x-2][y_index+y-2];			
+							}
+						}
+					}
+					double result = 0;
+					for(int i=0; i<25; i++)
+					{
+						result+= input[n][i]*mask[n][i]; 
+						//printf("%.8f ",input[n][i]);
+					}   
+					Features[n][x][y] = result;
+					//printf("%f [%d][%d][%d]\n", result,n,x,y);
+				}
+			}
+		}
+		for(int n=0; n<32; n++)
+		{
+			for(int x=0; x<8; x++)
+			{
+				for(int y=0; y<8; y++)
+				{
+					Layer3_Features[f][x][y]+= Features[n][x][y];
+				}
+			}
+		}
+	}
+	for(int f=0; f<64; f++)
+	{
+		for(int x=0; x<8; x++)
+		{
+			for(int y=0; y<8; y++)
+			{
+				if(Layer3_Features[f][x][y] < 0)
+					Layer3_Features[f][x][y] = 0;
+			}	
+		}
+		//printf("\n");
+	}
+	//printf("First Value: %.8f\n",Layer3_Features[63][4][0]);
+}
+
+void ExecuteFourthLayer(double *Layer4_Weights_CPU, double *Layer4_Features, double ***Pool3_Layer_Features)
+{
+	printf("Fourth Layer Execution\n");
+	for(int n=0;n<64; n++)
+	{
+		double result = 0;
+		for(int f=0; f<64; f++)
+		{
+			for(int x=0; x<4; x++)
+			{
+				for(int y=0; y<4; y++)
+				{
+					result+= Pool3_Layer_Features[f][x][y] * Layer4_Weights_CPU[y+(x*4)+(f*4*4)+(n*4*4*64)];
+				}
+			}
+		}
+		Layer4_Features[n] = result;
+		//printf("%.8f ",result);
+		result = 0;
+	}
+	//printf("\n");
+}
+
+void ExecuteFifthLayer(double *Layer5_Weights_CPU, double *Layer5_Features, double *Layer4_Features)
+{
+	printf("Fifth Layer Execution\n");
+	for(int n=0;n<9; n++)
+	{
+		double result = 0;
+		for(int f=0; f<64; f++)
+		{
+			result+= Layer4_Features[f] * Layer5_Weights_CPU[f+n*64];
+		}
+		Layer5_Features[n] = result;
+		printf("%.8f ",result);
+		result = 0;
+	}
+	printf("\n");
+}
+
 void pooling1(double ***Layer2_Neurons_GPU,double ***Layer2_pool_GPU,int out,int out_fr,int out_fc,int kernel,int stride_width,int in_fr,int in_fc)
 {
     printf("pooling Activation layer \n");
@@ -391,20 +624,60 @@ void pooling2(double ***Layer2_Neurons_GPU,double ***Layer2_pool_GPU,int out,int
 	//printf("\n");
         }
     }
-    for(int i=0; i<8; i++)
-    	printf("%.8f ",Layer2_pool_GPU[31][7][i]);
-    printf("\n");
+    //for(int i=0; i<8; i++)
+    	//printf("%.8f ",Layer2_pool_GPU[31][7][i]);
+    //printf("\n");
+}
+
+void pooling3(double ***Layer3_Neurons_GPU,double ***Layer3_pool_GPU,int out,int out_fr,int out_fc,int kernel,int stride_width,int in_fr,int in_fc)
+{
+    printf("pooling 3 layer \n");
+    double avg = 0.0;
+    int count = 0;
+    {
+        for(int output =0;output < out ;output++)
+        {
+            for(int row =1; row <= 8 ;row+=2)
+            { 
+                for(int col =1; col <= 8 ;col+=2)
+                {
+                    for(int i = row-1; i <= row+1; i++)
+                    {   
+			if(i>7) break;        
+                        for(int j = col-1; j <= col+1; j++)
+                        {
+			    if(j>7) break;
+                            avg+= ((Layer3_Neurons_GPU[output][i][j]));
+			    count++;
+
+                        }
+                    }
+                    Layer3_pool_GPU[output][(row-1)/2][(col-1)/2] = avg/count;
+                    //printf("%f %d \n",max, (((row-1)*8)+((col-1)/2) + output*16*16));     
+                    avg = 0.0;   
+		    count=0;
+                }
+            }
+	//printf("\n");
+        }
+    }
+    /*for(int i=0; i<4; i++)
+    	printf("%.8f ",Layer3_pool_GPU[63][3][i]);
+    printf("\n");*/
 }
 
 void NeuralNetwork()
 {
 	double *Layer1_Weights_CPU = (double*) malloc (3*32*32* NUM * sizeof(double));
 	double *Layer2_Weights_CPU = (double*) malloc (5*5*32*32* NUM * sizeof(double));
+	double *Layer3_Weights_CPU = (double*) malloc (5*5*32*64* NUM * sizeof(double));
+	double *Layer4_Weights_CPU = (double*) malloc (64*4*4*64* NUM * sizeof(double));
+	double *Layer5_Weights_CPU = (double*) malloc (64*9* NUM * sizeof(double));
 	int *Data_Layer_CPU_R = (int*) malloc (32*32*NUM*sizeof(int));
 	int *Data_Layer_CPU_G = (int*) malloc (32*32*NUM*sizeof(int));
 	int *Data_Layer_CPU_B = (int*) malloc (32*32*NUM*sizeof(int));
 	int *Data_Layer_CPU = (int*) malloc (3*32*32*NUM*sizeof(int));
-	InitHostMem(Layer1_Weights_CPU, Layer2_Weights_CPU);
+	InitHostMem(Layer1_Weights_CPU, Layer2_Weights_CPU, Layer3_Weights_CPU, Layer4_Weights_CPU, Layer5_Weights_CPU);
 	LoadInput(Data_Layer_CPU);
 	ConvertInput(Data_Layer_CPU_R, Data_Layer_CPU_G, Data_Layer_CPU_B, Data_Layer_CPU);
 	double ***Layer1_Features;
@@ -459,6 +732,39 @@ void NeuralNetwork()
 		}
 	}
 	pooling2(Layer2_Features, Pool2_Layer_Features, 32, 8, 8, 5, 2, 16, 16);
+	double ***Layer3_Features;
+	Layer3_Features = (double***)malloc(64*sizeof(double **));
+	assert(Layer3_Features!= NULL);
+	for(int i=0; i<64; i++)
+	{
+		Layer3_Features[i] = (double**)malloc(8*sizeof(double *));
+		assert(Layer3_Features[i] != NULL);
+		for(int j=0; j<8; j++)
+		{
+			Layer3_Features[i][j] = (double*)malloc(8*sizeof(double));
+		}
+	}
+	ExecuteThirdLayer(Layer3_Weights_CPU, Layer3_Features, Pool2_Layer_Features);
+	double ***Pool3_Layer_Features;
+	Pool3_Layer_Features = (double***)malloc(64*sizeof(double **));	
+	assert(Pool3_Layer_Features!= NULL);
+	for(int i=0; i<64; i++)
+	{
+		Pool3_Layer_Features[i] = (double**)malloc(4*sizeof(double *));
+		assert(Pool3_Layer_Features[i] != NULL);
+		for(int j=0; j<4; j++)
+		{
+			Pool3_Layer_Features[i][j] = (double*)malloc(4*sizeof(double));
+		}
+	}
+	pooling3(Layer3_Features, Pool3_Layer_Features, 64, 4, 4, 5, 2, 8, 8);
+	double *Layer4_Features;
+	Layer4_Features = (double*)malloc(64*sizeof(double));
+	ExecuteFourthLayer(Layer4_Weights_CPU, Layer4_Features, Pool3_Layer_Features);	
+	double *Layer5_Features;
+	Layer5_Features = (double*)malloc(9*sizeof(double));
+	ExecuteFifthLayer(Layer5_Weights_CPU, Layer5_Features, Layer4_Features);	
+
 }
 
 
