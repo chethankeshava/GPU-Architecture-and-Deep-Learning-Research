@@ -295,7 +295,7 @@ void ConvertInput(int *Data_Layer_CPU_R, int *Data_Layer_CPU_G, int *Data_Layer_
 void ExecuteFirstLayer(double *Layer1_Weights_CPU, int *Data_Layer_CPU_R, int *Data_Layer_CPU_G, int *Data_Layer_CPU_B, double ***Layer1_Features)
 {
 	printf("First Layer Execution\n");
-	for(int f=0; f<32; f++)
+	int f=0;//for(int f=0; f<32; f++)
 	{
 		double maskR[25], maskG[25], maskB[25];
 		int imageR[25], imageG[25], imageB[25];
@@ -305,16 +305,18 @@ void ExecuteFirstLayer(double *Layer1_Weights_CPU, int *Data_Layer_CPU_R, int *D
 			maskG[i] = Layer1_Weights_CPU[i+25+f*75];
 			maskB[i] = Layer1_Weights_CPU[i+50+f*75];
 		}
-		for(int x=0; x<32; x++)
+		int x=0;//for(int x=0; x<32; x++)
 		{
-			for(int y=0; y<32; y++)
+			int y=0;//for(int y=0; y<32; y++)
 			{
+				double result = 0;
 				for(int i = x-2; i<=x+2; i++)
 				{
     					for(int j=y-2; j<=y+2; j++)
     					{
 						int x_index = i-x+2;
 						int y_index = j-y+2;
+						int m = (y_index)+(x_index)*5;
          					if(i<0 || j<0)
 						{
              				 		imageR[(y_index)+(x_index)*5] = 0;
@@ -331,17 +333,19 @@ void ExecuteFirstLayer(double *Layer1_Weights_CPU, int *Data_Layer_CPU_R, int *D
 						{
                						imageR[(y_index)+(x_index)*5] = Data_Layer_CPU_R[(y_index-2) + x*32 + y + (x_index-2)*32];
                						imageG[(y_index)+(x_index)*5] = Data_Layer_CPU_G[(y_index-2) + x*32 + y + (x_index-2)*32];
-               						imageB[(y_index)+(x_index)*5] = Data_Layer_CPU_B[(y_index-2) + x*32 + y + (x_index-2)*32];			
+               						imageB[(y_index)+(x_index)*5] = Data_Layer_CPU_B[(y_index-2) + x*32 + y + (x_index-2)*32];
+							result += Data_Layer_CPU_R[(y_index-2) + x*32 + y + (x_index-2)*32]*Layer1_Weights_CPU[m+f*75] + Data_Layer_CPU_G[(y_index-2) + x*32 + y + (x_index-2)*32]*Layer1_Weights_CPU[m+25+f*75] + Data_Layer_CPU_B[(y_index-2) + x*32 + y + (x_index-2)*32]*Layer1_Weights_CPU[m+50+f*75];
+							printf("%d %d\n", ((y_index-2) + x*32 + y + (x_index-2)*32), m); 		
 						}
 					}
 				}
-				double result = 0;
-				for(int i=0; i<25; i++)
+				//double result = 0;
+				/*for(int i=0; i<25; i++)
 				{
 					 result+= imageR[i]*maskR[i] +imageG[i]*maskG[i] + imageB[i]*maskB[i]; 
-				}   
+				}*/   
 				Layer1_Features[f][x][y] = result;
-				//printf("%f ", result);
+				printf("%f ", result);
 			}
 		}
 	}
