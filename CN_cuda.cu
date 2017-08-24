@@ -867,7 +867,11 @@ void NeuralNetwork()
         	fprintf(stderr, "5th Kernel execution failed (error code %s)\n", cudaGetErrorString(err));
        		exit(EXIT_FAILURE);
         }
-
+	double *Layer5_output_CPU = (double*) malloc (9* NUM * sizeof(double));
+	cudaMemcpy(Layer5_output_CPU, Layer5_Features, 9* NUM * sizeof(double), cudaMemcpyDeviceToHost);
+	printf("\n");
+	for(int i=0; i<9; i++)
+		printf("%.8f\n",Layer5_output_CPU[i]);
 }
 
 
