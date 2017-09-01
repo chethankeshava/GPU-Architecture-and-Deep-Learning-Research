@@ -1,3 +1,14 @@
+/////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////
+//		Author:    Chethan Palangotu Keshava
+//		LinkedIn:  https://www.linkedin.com/in/chethankeshava/
+//		File:      C/C++ implementation of CifarNet
+//		Objective: Testing the performance of GPU architecture modifications done 
+//			   to GPGPU-SIM. The simulator is built on old CUDA version (4.0)
+//			   and hence no libraries are used for computations, with each
+//			   computation done manually
+///////////////////////////////////////////////////////////////////////////////////////// 
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -11,8 +22,6 @@
 #include <assert.h>
 using namespace std;
 
-// includes, project
-//#include <cutil.h>
 
 extern "C"
 void computeGold(float*, const float*, const float*, unsigned int, unsigned int, unsigned int);
@@ -98,7 +107,6 @@ void InitHostMem(double *Layer1_Weights_CPU, double *Layer2_Weights_CPU, double 
 		printf("File 2 Opened\n");
 		char s[3000000] = "";
 		fread(s,sizeof(s),1,pFile2);
-		//printf("%s\n",s);
 		printf("Done\n");
 		long int index = 0, i = 0;
 		char delim[2];
@@ -108,7 +116,6 @@ void InitHostMem(double *Layer1_Weights_CPU, double *Layer2_Weights_CPU, double 
 		while(temp_string != NULL)
 		{ 	
 			double temp_num = atof(temp_string);
-			//printf("%.8f %d\n",temp_num,i);
 			Layer2_Weights_CPU[i] = temp_num;
 			i++;
 			index++;
@@ -119,7 +126,6 @@ void InitHostMem(double *Layer1_Weights_CPU, double *Layer2_Weights_CPU, double 
 			}
 			temp_string = strtok(NULL, delim);
 		}
-		//printf("Last Value: %.8f\n",Layer2_Weights_CPU[25599]);
 		fclose (pFile2);
 	}	
 	
@@ -135,7 +141,6 @@ void InitHostMem(double *Layer1_Weights_CPU, double *Layer2_Weights_CPU, double 
 		printf("File 3 Opened\n");
 		char s[6000000] = "";
 		fread(s,sizeof(s),1,pFile2);
-		//printf("%s\n",s);
 		printf("Done\n");
 		long int index = 0, i = 0;
 		char delim[2];
@@ -145,7 +150,6 @@ void InitHostMem(double *Layer1_Weights_CPU, double *Layer2_Weights_CPU, double 
 		while(temp_string != NULL)
 		{ 	
 			double temp_num = atof(temp_string);
-			//printf("%.8f %d\n",temp_num,i);
 			Layer3_Weights_CPU[i] = temp_num;
 			i++;
 			index++;
@@ -156,7 +160,6 @@ void InitHostMem(double *Layer1_Weights_CPU, double *Layer2_Weights_CPU, double 
 			}
 			temp_string = strtok(NULL, delim);
 		}
-		//printf("Last Value: %.8f\n",Layer3_Weights_CPU[51100]);
 		fclose (pFile3);
 	}	
 	
@@ -172,7 +175,6 @@ void InitHostMem(double *Layer1_Weights_CPU, double *Layer2_Weights_CPU, double 
 		printf("File 4 Opened\n");
 		char s[8000000] = "";
 		fread(s,sizeof(s),1,pFile2);
-		//printf("%s\n",s);
 		printf("Done\n");
 		long int index = 0, i = 0;
 		char delim[2];
@@ -182,7 +184,6 @@ void InitHostMem(double *Layer1_Weights_CPU, double *Layer2_Weights_CPU, double 
 		while(temp_string != NULL)
 		{ 	
 			double temp_num = atof(temp_string);
-			//printf("%.8f %d\n",temp_num,i);
 			Layer4_Weights_CPU[i] = temp_num;
 			i++;
 			index++;
@@ -193,7 +194,6 @@ void InitHostMem(double *Layer1_Weights_CPU, double *Layer2_Weights_CPU, double 
 			}
 			temp_string = strtok(NULL, delim);
 		}
-		//printf("First Value: %.8f\n",Layer4_Weights_CPU[0]);
 		fclose (pFile4);
 	}	
 	
@@ -209,7 +209,6 @@ void InitHostMem(double *Layer1_Weights_CPU, double *Layer2_Weights_CPU, double 
 		printf("File 5 Opened\n");
 		char s[80000] = "";
 		fread(s,sizeof(s),1,pFile2);
-		//printf("%s\n",s);
 		printf("Done\n");
 		long int index = 0, i = 0;
 		char delim[2];
@@ -219,7 +218,6 @@ void InitHostMem(double *Layer1_Weights_CPU, double *Layer2_Weights_CPU, double 
 		while(temp_string != NULL)
 		{ 	
 			double temp_num = atof(temp_string);
-			//printf("%.8f %d\n",temp_num,i);
 			Layer5_Weights_CPU[i] = temp_num;
 			i++;
 			index++;
@@ -230,7 +228,6 @@ void InitHostMem(double *Layer1_Weights_CPU, double *Layer2_Weights_CPU, double 
 			}
 			temp_string = strtok(NULL, delim);
 		}
-		//printf("Last Value: %.8f\n",Layer5_Weights_CPU[575]);
 		fclose (pFile5);
 	}	
 	
@@ -249,13 +246,11 @@ void LoadInput(int *Data_Layer_CPU)
 		printf("File Opened\n");
 		char s[300000] = "";
 		fread(s,sizeof(s),1,pFile1);
-		//printf("%s", s);
 		printf("Done2\n");
 		long int index = 0, i = 0;
 		char delim[2];
 		delim[0] = '\n';
     		delim[1] = 0;
-		//int address = 0;
 		char* temp_string = strtok(s, delim);
 		while(temp_string != NULL)
 		{ 	
@@ -269,12 +264,8 @@ void LoadInput(int *Data_Layer_CPU)
 				break;
 			}
 			temp_string = strtok(NULL, delim);
-			//if(temp_string != NULL)
-			//	address = strlen(temp_string);
 		}
-		//printf("%d", Data_Layer_CPU[(32*32*3)-1]);
 		fclose (pFile1);
-		//printf("Last image value: %d", );
 	}	
 	if (!pFile1)
 	{
@@ -295,7 +286,7 @@ void ConvertInput(int *Data_Layer_CPU_R, int *Data_Layer_CPU_G, int *Data_Layer_
 void ExecuteFirstLayer(double *Layer1_Weights_CPU, int *Data_Layer_CPU_R, int *Data_Layer_CPU_G, int *Data_Layer_CPU_B, double ***Layer1_Features)
 {
 	printf("First Layer Execution\n");
-	int f=0;//for(int f=0; f<32; f++)
+	int f=0;
 	{
 		double maskR[25], maskG[25], maskB[25];
 		int imageR[25], imageG[25], imageB[25];
@@ -305,9 +296,9 @@ void ExecuteFirstLayer(double *Layer1_Weights_CPU, int *Data_Layer_CPU_R, int *D
 			maskG[i] = Layer1_Weights_CPU[i+25+f*75];
 			maskB[i] = Layer1_Weights_CPU[i+50+f*75];
 		}
-		int x=0;//for(int x=0; x<32; x++)
+		int x=0;
 		{
-			int y=0;//for(int y=0; y<32; y++)
+			int y=0;
 			{
 				double result = 0;
 				for(int i = x-2; i<=x+2; i++)
@@ -338,25 +329,11 @@ void ExecuteFirstLayer(double *Layer1_Weights_CPU, int *Data_Layer_CPU_R, int *D
 							printf("%d %d\n", ((y_index-2) + x*32 + y + (x_index-2)*32), m); 		
 						}
 					}
-				}
-				//double result = 0;
-				/*for(int i=0; i<25; i++)
-				{
-					 result+= imageR[i]*maskR[i] +imageG[i]*maskG[i] + imageB[i]*maskB[i]; 
-				}*/   
+				}  
 				Layer1_Features[f][x][y] = result;
 				printf("%f ", result);
 			}
 		}
-	}
-	//printf("\n");
-	for(int x=0; x<32; x++)
-	{
-		for(int y=0; y<32; y++)
-		{
-			//printf("%.8f  %d\n",Layer1_Features[1][x][y], x*32+y);
-		}
-		//printf("\n");
 	}
 }
 
@@ -373,11 +350,8 @@ void ExecuteSecondLayer(double *Layer2_Weights_CPU, double ***Layer2_Features, d
 			for(int i=0; i<25; i++)
 			{
 				mask[n][i] = Layer2_Weights_CPU[i+f*25*32+n*25];
-				//printf("%.8f ", mask[n][i]);
 			}
-			//printf("\n");
 		}
-		//printf("Weights Load Complete\n");
 		for(int n=0; n<32; n++)
 		{
 			for(int x=0; x<16; x++)
@@ -408,10 +382,8 @@ void ExecuteSecondLayer(double *Layer2_Weights_CPU, double ***Layer2_Features, d
 					for(int i=0; i<25; i++)
 					{
 						result+= input[n][i]*mask[n][i]; 
-						//printf("%.8f ",input[n][i]);
 					}   
 					Features[n][x][y] = result;
-					//printf("%f [%d][%d][%d]\n", result,n,x,y);
 				}
 			}
 		}
@@ -436,9 +408,7 @@ void ExecuteSecondLayer(double *Layer2_Weights_CPU, double ***Layer2_Features, d
 					Layer2_Features[f][x][y] = 0;
 			}	
 		}
-		//printf("\n");
 	}
-	//printf("First Value: %.8f\n",Layer2_Features[31][15][11]);
 }
 
 void ExecuteThirdLayer(double *Layer3_Weights_CPU, double ***Layer3_Features, double ***Layer3_pool_GPU)
@@ -454,11 +424,8 @@ void ExecuteThirdLayer(double *Layer3_Weights_CPU, double ***Layer3_Features, do
 			for(int i=0; i<25; i++)
 			{
 				mask[n][i] = Layer3_Weights_CPU[i+f*25*32+n*25];
-				//printf("%.8f ", mask[n][i]);
 			}
-			//printf("\n");
 		}
-		//printf("Weights Load Complete\n");
 		for(int n=0; n<32; n++)
 		{
 			for(int x=0; x<8; x++)
@@ -489,10 +456,8 @@ void ExecuteThirdLayer(double *Layer3_Weights_CPU, double ***Layer3_Features, do
 					for(int i=0; i<25; i++)
 					{
 						result+= input[n][i]*mask[n][i]; 
-						//printf("%.8f ",input[n][i]);
 					}   
 					Features[n][x][y] = result;
-					//printf("%f [%d][%d][%d]\n", result,n,x,y);
 				}
 			}
 		}
@@ -517,9 +482,7 @@ void ExecuteThirdLayer(double *Layer3_Weights_CPU, double ***Layer3_Features, do
 					Layer3_Features[f][x][y] = 0;
 			}	
 		}
-		//printf("\n");
 	}
-	//printf("First Value: %.8f\n",Layer3_Features[63][4][0]);
 }
 
 void ExecuteFourthLayer(double *Layer4_Weights_CPU, double *Layer4_Features, double ***Pool3_Layer_Features)
@@ -539,10 +502,8 @@ void ExecuteFourthLayer(double *Layer4_Weights_CPU, double *Layer4_Features, dou
 			}
 		}
 		Layer4_Features[n] = result;
-		//printf("%.8f ",result);
 		result = 0;
 	}
-	//printf("\n");
 }
 
 void ExecuteFifthLayer(double *Layer5_Weights_CPU, double *Layer5_Features, double *Layer4_Features)
@@ -586,12 +547,10 @@ void pooling1(double ***Layer2_Neurons_GPU,double ***Layer2_pool_GPU,int out,int
                     }
 		    if(max<0)
 			max = 0;
-                    Layer2_pool_GPU[output][(row-1)/2][(col-1)/2] = max;
-                    //printf("%f %d \n",max, (((row-1)*8)+((col-1)/2) + output*16*16));     
+                    Layer2_pool_GPU[output][(row-1)/2][(col-1)/2] = max;    
                     max = 0.0;   
                 }
             }
-	//printf("\n");
         }
     }
 }
@@ -619,18 +578,13 @@ void pooling2(double ***Layer2_Neurons_GPU,double ***Layer2_pool_GPU,int out,int
 
                         }
                     }
-                    Layer2_pool_GPU[output][(row-1)/2][(col-1)/2] = avg/count;
-                    //printf("%f %d \n",max, (((row-1)*8)+((col-1)/2) + output*16*16));     
+                    Layer2_pool_GPU[output][(row-1)/2][(col-1)/2] = avg/count;     
                     avg = 0.0;   
 		    count=0;
                 }
             }
-	//printf("\n");
         }
     }
-    //for(int i=0; i<8; i++)
-    	//printf("%.8f ",Layer2_pool_GPU[31][7][i]);
-    //printf("\n");
 }
 
 void pooling3(double ***Layer3_Neurons_GPU,double ***Layer3_pool_GPU,int out,int out_fr,int out_fc,int kernel,int stride_width,int in_fr,int in_fc)
@@ -656,18 +610,13 @@ void pooling3(double ***Layer3_Neurons_GPU,double ***Layer3_pool_GPU,int out,int
 
                         }
                     }
-                    Layer3_pool_GPU[output][(row-1)/2][(col-1)/2] = avg/count;
-                    //printf("%f %d \n",max, (((row-1)*8)+((col-1)/2) + output*16*16));     
+                    Layer3_pool_GPU[output][(row-1)/2][(col-1)/2] = avg/count;     
                     avg = 0.0;   
 		    count=0;
                 }
             }
-	//printf("\n");
         }
     }
-    /*for(int i=0; i<4; i++)
-    	printf("%.8f ",Layer3_pool_GPU[63][3][i]);
-    printf("\n");*/
 }
 
 void NeuralNetwork()
